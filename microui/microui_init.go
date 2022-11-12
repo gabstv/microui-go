@@ -11,8 +11,6 @@ import (
 	"unsafe"
 )
 
-type Font uintptr
-
 type GetTextWidthFunc func(font Font, text string) int32
 type GetTextHeightFunc func(font Font) int32
 

@@ -88,3 +88,5 @@ func Max[T constraints.Ordered](a, b T) T {
 	}
 	return b
 }
+
+type Font unsafe.Pointer

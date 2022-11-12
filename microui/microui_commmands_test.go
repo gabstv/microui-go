@@ -7,6 +7,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type DemoFont struct {
+	Name string
+}
+
+func (f *DemoFont) Handle() unsafe.Pointer {
+	return unsafe.Pointer(f)
+}
+
+func fontFromMicroUI(f Font) *DemoFont {
+	return (*DemoFont)(unsafe.Pointer(f))
+}
+
 func tobytes[T any](data T) []byte {
 	if str, ok := any(data).(string); ok {
 		return []byte(str)
@@ -62,14 +74,15 @@ func TestCommandConversions(t *testing.T) {
 
 	// test text command
 	cmd.ctype = CommandText
-	copy(buf, tobytes(Font(0x12345678)))
+	df := &DemoFont{Name: "testfont1"}
+	copy(buf, tobytes(uintptr(df.Handle())))
 	copy(buf[8:], tobytes(Vec2{1, 2}))
 	copy(buf[16:], tobytes(Color{3, 4, 5, 6}))
 	copy(buf[20:], tobytes("hello world"))
 	cmd.data = newslicecp(buf, 31)
 	cmd.size = 39
 	tt := cmd.Text()
-	assert.Equal(t, Font(0x12345678), tt.Font())
+	assert.Equal(t, df, fontFromMicroUI(tt.Font()))
 	assert.Equal(t, Vec2{1, 2}, tt.Pos())
 	assert.Equal(t, Color{3, 4, 5, 6}, tt.Color())
 	assert.Equal(t, "hello world", tt.Text())
