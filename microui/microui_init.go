@@ -29,15 +29,16 @@ var (
 
 //export goDefaultGetTextWidthFunc
 func goDefaultGetTextWidthFunc(font unsafe.Pointer, text unsafe.Pointer, size C.int) C.int {
-	fmt.Println("goDefaultGetTextWidthFunc", font, text, size)
+	// fmt.Println("goDefaultGetTextWidthFunc", font, text, size)
 	var txt string
 	if size == -1 {
 		txt = C.GoString((*C.char)(text))
 	} else {
 		txt = string(C.GoBytes(text, size))
 	}
-	fmt.Println("goDefaultGetTextWidthFunc :)", txt)
+	// fmt.Println("goDefaultGetTextWidthFunc :)", txt)
 	v := DefaultGetTextWidth((Font)(font), txt)
+	fmt.Println(v)
 	return C.int(v)
 }
 
