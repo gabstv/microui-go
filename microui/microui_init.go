@@ -7,7 +7,6 @@ package microui
 */
 import "C"
 import (
-	"fmt"
 	"unsafe"
 )
 
@@ -38,7 +37,7 @@ func goDefaultGetTextWidthFunc(font unsafe.Pointer, text unsafe.Pointer, size C.
 	}
 	// fmt.Println("goDefaultGetTextWidthFunc :)", txt)
 	v := DefaultGetTextWidth((Font)(font), txt)
-	fmt.Println(v)
+	// fmt.Println(v)
 	return C.int(v)
 }
 
