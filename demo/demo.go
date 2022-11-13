@@ -3,6 +3,7 @@ package demo
 import (
 	"fmt"
 	"strings"
+	"sync"
 
 	//lint:ignore ST1001 this is a demo
 	. "github.com/gabstv/microui-go/microui"
@@ -181,3 +182,79 @@ func LogWindow(ctx *Context) {
 		}
 	}
 }
+
+func uint8Slider(ctx *Context, fvalue *float32, value *uint8, low, high float32) ResultFlags {
+	*fvalue = float32(*value)
+	res := ctx.SliderEx(fvalue, low, high, 0, "%.0f", OptAlignCenter)
+	*value = uint8(*fvalue)
+	return res
+}
+
+var colors = [...]struct {
+	label   string
+	colorid ColorID
+}{
+	{"text:", ColorText},
+	{"border:", ColorBorder},
+	{"windowbg:", ColorWindowbg},
+	{"titlebg:", ColorTitlebg},
+	{"titletext:", ColorTitletext},
+	{"panelbg:", ColorPanelbg},
+	{"button:", ColorButton},
+	{"buttonhover:", ColorButtonhover},
+	{"buttonfocus:", ColorButtonfocus},
+	{"base:", ColorBase},
+	{"basehover:", ColorBasehover},
+	{"basefocus:", ColorBasefocus},
+	{"scrollbase:", ColorScrollbase},
+	{"scrollthumb:", ColorScrollthumb},
+	{},
+}
+
+var pcolors [14]Color
+var fcolors [14]struct {
+	r, g, b, a float32
+}
+
+var styleWindowOnce sync.Once
+
+func styleWindowOnceFn(ctx *Context) {
+	s := ctx.Style()
+	for i := range pcolors {
+		pcolors[i] = s.Color(colors[i].colorid)
+	}
+}
+
+func StyleWindow(ctx *Context) {
+	styleWindowOnce.Do(func() { styleWindowOnceFn(ctx) })
+	if ctx.BeginWindow("Style Window", NewRect(350, 250, 300, 240)) {
+		defer ctx.EndWindow()
+		sw := int32(float32(ctx.GetCurrentContainer().Body().W) * 0.14)
+		ctx.LayoutRow(6, []int32{80, sw, sw, sw, sw, -1}, 0)
+		for i := 0; colors[i].label != ""; i++ {
+			prevc := pcolors[i]
+			cptr := &pcolors[i]
+			fptr := &fcolors[i]
+			ctx.Label(colors[i].label)
+			uint8Slider(ctx, &fptr.r, &cptr.R, 0, 255)
+			uint8Slider(ctx, &fptr.g, &cptr.G, 0, 255)
+			uint8Slider(ctx, &fptr.b, &cptr.B, 0, 255)
+			uint8Slider(ctx, &fptr.a, &cptr.A, 0, 255)
+			ctx.DrawRect(ctx.LayoutNext(), pcolors[i])
+			if !prevc.Equals(pcolors[i]) {
+				ctx.Style().SetColor(colors[i].colorid, pcolors[i])
+			}
+		}
+	}
+}
+
+// 	  int sw = mu_get_current_container(ctx)->body.w * 0.14;
+// 	  mu_layout_row(ctx, 6, (int[]) { 80, sw, sw, sw, sw, -1 }, 0);
+// 	  for (int i = 0; colors[i].label; i++) {
+// 		mu_label(ctx, colors[i].label);
+// 		uint8_slider(ctx, &ctx->style->colors[i].r, 0, 255);
+// 		uint8_slider(ctx, &ctx->style->colors[i].g, 0, 255);
+// 		uint8_slider(ctx, &ctx->style->colors[i].b, 0, 255);
+// 		uint8_slider(ctx, &ctx->style->colors[i].a, 0, 255);
+// 		mu_draw_rect(ctx, mu_layout_next(ctx), ctx->style->colors[i]);
+// 	  }

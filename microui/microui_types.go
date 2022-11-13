@@ -54,6 +54,10 @@ type Color struct {
 	A uint8
 }
 
+func (r Color) Equals(other Color) bool {
+	return r.R == other.R && r.G == other.G && r.B == other.B && r.A == other.A
+}
+
 func (r *Color) cval() C.mu_Color {
 	return C.mu_Color{C.uchar(r.R), C.uchar(r.G), C.uchar(r.B), C.uchar(r.A)}
 }

@@ -63,6 +63,7 @@ enum {
 
 enum {
   MU_ICON_CLOSE = 1,
+  MU_ICON_RESIZE,
   MU_ICON_CHECK,
   MU_ICON_COLLAPSED,
   MU_ICON_EXPANDED,
@@ -164,6 +165,7 @@ typedef struct {
   int spacing;
   int indent;
   int title_height;
+  int footer_height;
   int scrollbar_size;
   int thumb_size;
   mu_Color colors[MU_COLOR_MAX];

@@ -6,6 +6,7 @@ package microui
 #include <stdlib.h>
 */
 import "C"
+import "unsafe"
 
 type Context struct {
 	parent     *C.mu_Context
@@ -41,6 +42,20 @@ func (ctx *Context) SetFocus(id ID) {
 	C.mu_set_focus(ctx.parent, C.uint(id))
 }
 
+func GetID[T any](ctx *Context, data *T) ID {
+	size := unsafe.Sizeof(*data)
+	return ID(C.mu_get_id(ctx.parent, unsafe.Pointer(data), C.int(size)))
+}
+
+func PushID[T any](ctx *Context, data *T) {
+	size := unsafe.Sizeof(*data)
+	C.mu_push_id(ctx.parent, unsafe.Pointer(data), C.int(size))
+}
+
+func (ctx *Context) PopID() {
+	C.mu_pop_id(ctx.parent)
+}
+
 func (ctx *Context) LastID() ID {
 	return ID(ctx.parent.last_id)
 }
@@ -49,4 +64,22 @@ func (ctx *Context) GetCurrentContainer() *Container {
 	return &Container{
 		parent: C.mu_get_current_container(ctx.parent),
 	}
+}
+
+func (ctx *Context) Style() *Style {
+	return &Style{
+		parent: ctx.parent.style,
+	}
+}
+
+type Style struct {
+	parent *C.mu_Style
+}
+
+func (s *Style) Color(id ColorID) Color {
+	return *(*Color)(unsafe.Pointer(&s.parent.colors[int32(id)]))
+}
+
+func (s *Style) SetColor(id ColorID, color Color) {
+	s.parent.colors[int32(id)] = *(*C.mu_Color)(unsafe.Pointer(&color))
 }

@@ -139,8 +139,6 @@ func (ctx *Context) TextboxEx(buf *Buf, flags OptFlags) ResultFlags {
 	return ResultFlags(v)
 }
 
-// ...
-
 func (ctx *Context) Slider(value *float32, low, high float32) ResultFlags {
 	return ctx.SliderEx(value, low, high, 0, FormatSlider, OptAlignCenter)
 }

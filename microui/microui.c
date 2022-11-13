@@ -52,8 +52,8 @@ static mu_Rect unclipped_rect = { 0, 0, 0x1000000, 0x1000000 };
 static mu_Style default_style = {
   /* font | size | padding | spacing | indent */
   NULL, { 68, 10 }, 5, 4, 24,
-  /* title_height | scrollbar_size | thumb_size */
-  24, 12, 8,
+  /* title_height | footer_height | scrollbar_size | thumb_size */
+  24, 18, 12, 8,
   {
     { 230, 230, 230, 255 }, /* MU_COLOR_TEXT */
     { 25,  25,  25,  255 }, /* MU_COLOR_BORDER */
@@ -1128,19 +1128,23 @@ int mu_begin_window_ex(mu_Context *ctx, const char *title, mu_Rect rect, int opt
     }
   }
 
-  push_container_body(ctx, cnt, body, opt);
+  // push_container_body(ctx, cnt, body, opt);
 
   /* do `resize` handle */
   if (~opt & MU_OPT_NORESIZE) {
-    int sz = ctx->style->title_height;
+    int sz = ctx->style->footer_height;
     mu_Id id = mu_get_id(ctx, "!resize", 7);
     mu_Rect r = mu_rect(rect.x + rect.w - sz, rect.y + rect.h - sz, sz, sz);
     mu_update_control(ctx, id, r, opt);
+    mu_draw_icon(ctx, MU_ICON_RESIZE, r, ctx->style->colors[MU_COLOR_TEXT]); /* do `resize` notch */
     if (id == ctx->focus && ctx->mouse_down == MU_MOUSE_LEFT) {
       cnt->rect.w = mu_max(96, cnt->rect.w + ctx->mouse_delta.x);
       cnt->rect.h = mu_max(64, cnt->rect.h + ctx->mouse_delta.y);
     }
+    body.h -= sz;
   }
+  /* do scrollbars and init clipping */
+  push_container_body(ctx, cnt, body, opt);
 
   /* resize to content size */
   if (opt & MU_OPT_AUTOSIZE) {
