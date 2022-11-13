@@ -15,3 +15,16 @@ A Go binding of [microui](https://github.com/rxi/microui), a *tiny*, portable, i
 
 This example is using a [raylib-go driver](https://github.com/gabstv/microui-go-raylib). The source code is available at:  
 https://github.com/gabstv/microui-go-raylib/blob/main/example/demo/main.go
+
+## Notes
+The library expects the user to provide input and handle the resultant drawing
+commands, it does not do any drawing itself.
+
+## Contributing
+The library is designed to be lightweight, providing a foundation to which you
+can easily add custom controls and UI elements; pull requests adding additional
+features will likely not be merged. Bug reports are welcome.
+
+## License
+This library is free software; you can redistribute it and/or modify it under
+the terms of the MIT license. See [LICENSE](LICENSE.txt) for details.
