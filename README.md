@@ -13,5 +13,5 @@ A Go binding of [microui](https://github.com/rxi/microui), a *tiny*, portable, i
 ## Example
 ![example](docs/example.png)
 
-This example is using a [raylib-go driver](https://github.com/gabstv/microui-go-raylib). The source code is available at:
+This example is using a [raylib-go driver](https://github.com/gabstv/microui-go-raylib). The source code is available at:  
 https://github.com/gabstv/microui-go-raylib/blob/main/example/demo/main.go
