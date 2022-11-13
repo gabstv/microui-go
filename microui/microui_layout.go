@@ -15,6 +15,43 @@ const (
 	ResChange
 )
 
+const (
+	FormatReal   = "%.3g"
+	FormatSlider = "%.2f"
+)
+
+type ColorID int32
+
+const (
+	ColorText ColorID = iota
+	ColorBorder
+	ColorWindowbg
+	ColorTitlebg
+	ColorTitletext
+	ColorPanelbg
+	ColorButton
+	ColorButtonhover
+	ColorButtonfocus
+	ColorBase
+	ColorBasehover
+	ColorBasefocus
+	ColorScrollbase
+	ColorScrollthumb
+)
+
+func (ctx *Context) DrawRect(rect Rect, color Color) {
+	C.mu_draw_rect(ctx.parent, rect.cval(), color.cval())
+}
+
+// TODO: mu_draw_box
+// TODO: mu_draw_text
+
+func (ctx *Context) DrawIcon(id int32, rect Rect, color Color) {
+	C.mu_draw_icon(ctx.parent, C.int(id), rect.cval(), color.cval())
+}
+
+// ...
+
 func (ctx *Context) LayoutRow(items int32, widths []int32, height int32) {
 	var cwidths *C.int
 	if len(widths) > 0 {
@@ -48,6 +85,14 @@ func (ctx *Context) LayoutNext() Rect {
 	return *(*Rect)(unsafe.Pointer(&crect))
 }
 
+//TODO: mu_draw_control_frame
+
+func (ctx *Context) DrawControlText(str string, rect Rect, colorid ColorID, flags OptFlags) {
+	cstr := C.CString(str)
+	defer C.free(unsafe.Pointer(cstr))
+	C.mu_draw_control_text(ctx.parent, cstr, rect.cval(), C.int(colorid), C.int(flags))
+}
+
 //TODO: mu_draw_control_frame...mu_begin_panel
 
 func (ctx *Context) Text(str string) {
@@ -78,6 +123,20 @@ func (ctx *Context) Checkbox(label string, state *int32) ResultFlags {
 	clabel := C.CString(label)
 	defer C.free(unsafe.Pointer(clabel))
 	v := C.mu_checkbox(ctx.parent, clabel, cstate)
+	return ResultFlags(v)
+}
+
+// ...
+
+func (ctx *Context) Slider(value *float32, low, high float32) ResultFlags {
+	return ctx.SliderEx(value, low, high, 0, FormatSlider, OptAlignCenter)
+}
+
+func (ctx *Context) SliderEx(value *float32, low, high, step float32, format string, flags OptFlags) ResultFlags {
+	cvalue := (*C.float)(unsafe.Pointer(value))
+	cformat := C.CString(format)
+	defer C.free(unsafe.Pointer(cformat))
+	v := C.mu_slider_ex(ctx.parent, cvalue, C.float(low), C.float(high), C.float(step), cformat, C.int(flags))
 	return ResultFlags(v)
 }
 

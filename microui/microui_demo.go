@@ -4,7 +4,12 @@ import "fmt"
 
 var (
 	demoWindowCheckboxes = [3]int32{1, 0, 1}
+	demoWindowBackground = [3]float32{90, 95, 100}
 )
+
+func DemoWindowBackgroundColor() Color {
+	return Color{R: uint8(demoWindowBackground[0]), G: uint8(demoWindowBackground[1]), B: uint8(demoWindowBackground[2]), A: 255}
+}
 
 func DrawDemoWindow(ctx *Context) {
 	if ctx.BeginWindow("Demo Window", NewRect(40, 40, 300, 450)) {
@@ -104,6 +109,26 @@ func DrawDemoWindow(ctx *Context) {
 			ctx.LayoutRow(1, []int32{-1}, 0)
 			ctx.Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas lacinia, sem eu lacinia molestie, mi risus faucibus ipsum, eu varius magna felis a nulla.")
 			ctx.LayoutEndColumn()
+		}
+
+		// background color sliders
+		if ctx.HeaderEx("Background Color", OptExpanded) {
+			ctx.LayoutRow(2, []int32{-78, -1}, 74)
+			//  sliders
+			ctx.LayoutBeginColumn()
+			ctx.LayoutRow(2, []int32{46, -1}, 0)
+			ctx.Label("Red:")
+			ctx.Slider(&demoWindowBackground[0], 0, 255)
+			ctx.Label("Green:")
+			ctx.Slider(&demoWindowBackground[1], 0, 255)
+			ctx.Label("Blue:")
+			ctx.Slider(&demoWindowBackground[2], 0, 255)
+			ctx.LayoutEndColumn()
+			// color preview
+			rect := ctx.LayoutNext()
+			ctx.DrawRect(rect, Color{uint8(demoWindowBackground[0]), uint8(demoWindowBackground[1]), uint8(demoWindowBackground[2]), 255})
+			txt := fmt.Sprintf("#%02X%02X%02X", uint8(demoWindowBackground[0]), uint8(demoWindowBackground[1]), uint8(demoWindowBackground[2]))
+			ctx.DrawControlText(txt, rect, ColorText, OptAlignCenter)
 		}
 	}
 }

@@ -53,6 +53,10 @@ type Color struct {
 	A uint8
 }
 
+func (r *Color) cval() C.mu_Color {
+	return C.mu_Color{C.uchar(r.R), C.uchar(r.G), C.uchar(r.B), C.uchar(r.A)}
+}
+
 type Vec2 struct {
 	X int32
 	Y int32
