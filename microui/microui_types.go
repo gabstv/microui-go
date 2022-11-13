@@ -43,6 +43,10 @@ func (r *Rect) cval() C.mu_Rect {
 	return C.mu_Rect{C.int(r.X), C.int(r.Y), C.int(r.W), C.int(r.H)}
 }
 
+func (r *Rect) Contains(x, y int32) bool {
+	return x >= r.X && x < r.X+r.W && y >= r.Y && y < r.Y+r.H
+}
+
 func NewRect(x, y, w, h int32) Rect {
 	return Rect{X: x, Y: y, W: w, H: h}
 }
