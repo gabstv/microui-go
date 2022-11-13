@@ -48,6 +48,8 @@ func (ctx *Context) Hover() ID {
 	return ID(ctx.parent.hover)
 }
 
+// HoverRoot returns the container that is currently hovered.
+// This is useful for determining if the mouse is hovering over a window.
 func (ctx *Context) HoverRoot() *Container {
 	if ctx.parent.hover_root == nil {
 		return nil
