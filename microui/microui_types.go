@@ -12,6 +12,24 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
+type OptFlags int32
+
+const (
+	OptAlignCenter OptFlags = 1 << iota
+	OptAlignRight
+	OptNoInteract
+	OptNoFrame
+	OptNoResize
+	OptNoScroll
+	OptNoClose
+	OptNoTitle
+	OptHoldFocus
+	OptAutosize
+	OptPopup
+	OptClosed
+	OptExpanded
+)
+
 // typedef struct { int x, y, w, h; } mu_Rect;
 type Rect struct {
 	X int32
@@ -90,3 +108,10 @@ func Max[T constraints.Ordered](a, b T) T {
 }
 
 type Font unsafe.Pointer
+
+func cbool(v bool) C.int {
+	if v {
+		return 1
+	}
+	return 0
+}

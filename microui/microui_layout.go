@@ -1,0 +1,140 @@
+package microui
+
+/*
+#include "microui.h"
+#include <stdlib.h>
+*/
+import "C"
+import "unsafe"
+
+type ResultFlags int32
+
+const (
+	ResActive ResultFlags = 1 << iota
+	ResSubmit
+	ResChange
+)
+
+func (ctx *Context) LayoutRow(items int32, widths []int32, height int32) {
+	var cwidths *C.int
+	if len(widths) > 0 {
+		cwidths = (*C.int)(unsafe.Pointer(&widths[0]))
+	}
+	C.mu_layout_row(ctx.parent, C.int(items), cwidths, C.int(height))
+}
+
+func (ctx *Context) LayoutWidth(width int32) {
+	C.mu_layout_width(ctx.parent, C.int(width))
+}
+
+func (ctx *Context) LayoutHeight(height int32) {
+	C.mu_layout_height(ctx.parent, C.int(height))
+}
+
+func (ctx *Context) LayoutBeginColumn() {
+	C.mu_layout_begin_column(ctx.parent)
+}
+
+func (ctx *Context) LayoutEndColumn() {
+	C.mu_layout_end_column(ctx.parent)
+}
+
+func (ctx *Context) LayoutSetNext(rect Rect, relative bool) {
+	C.mu_layout_set_next(ctx.parent, rect.cval(), cbool(relative))
+}
+
+func (ctx *Context) LayoutNext() Rect {
+	crect := C.mu_layout_next(ctx.parent)
+	return *(*Rect)(unsafe.Pointer(&crect))
+}
+
+//TODO: mu_draw_control_frame...mu_begin_panel
+
+func (ctx *Context) Text(str string) {
+	cstr := C.CString(str)
+	defer C.free(unsafe.Pointer(cstr))
+	C.mu_text(ctx.parent, cstr)
+}
+
+func (ctx *Context) Label(str string) {
+	cstr := C.CString(str)
+	defer C.free(unsafe.Pointer(cstr))
+	C.mu_label(ctx.parent, cstr)
+}
+
+func (ctx *Context) Button(label string) bool {
+	return ctx.ButtonEx(label, 0, 0)
+}
+
+func (ctx *Context) ButtonEx(label string, icon int32, flags OptFlags) bool {
+	clabel := C.CString(label)
+	defer C.free(unsafe.Pointer(clabel))
+	v := C.mu_button_ex(ctx.parent, clabel, C.int(icon), C.int(flags))
+	return v != 0
+}
+
+func (ctx *Context) Checkbox(label string, state *int32) ResultFlags {
+	cstate := (*C.int)(unsafe.Pointer(state))
+	clabel := C.CString(label)
+	defer C.free(unsafe.Pointer(clabel))
+	v := C.mu_checkbox(ctx.parent, clabel, cstate)
+	return ResultFlags(v)
+}
+
+// ...
+
+func (ctx *Context) Header(label string) bool {
+	return ctx.HeaderEx(label, 0)
+}
+
+func (ctx *Context) HeaderEx(label string, flags OptFlags) bool {
+	clabel := C.CString(label)
+	defer C.free(unsafe.Pointer(clabel)) // TODO: check if this doesnt break
+	v := C.mu_header_ex(ctx.parent, clabel, C.int(flags))
+	return v != 0
+}
+
+func (ctx *Context) BeginTreenode(label string) bool {
+	return ctx.BeginTreenodeEx(label, 0)
+}
+
+func (ctx *Context) BeginTreenodeEx(label string, flags OptFlags) bool {
+	clabel := C.CString(label)
+	defer C.free(unsafe.Pointer(clabel))
+	v := C.mu_begin_treenode_ex(ctx.parent, clabel, C.int(flags))
+	return v != 0
+}
+
+func (ctx *Context) EndTreenode() {
+	C.mu_end_treenode(ctx.parent)
+}
+
+func (ctx *Context) BeginWindow(title string, rect Rect) bool {
+	cTitle := C.CString(title)
+	defer C.free(unsafe.Pointer(cTitle))
+	iv := C.mu_begin_window_ex(ctx.parent, cTitle, rect.cval(), C.int(0))
+	return iv != 0
+}
+
+func (ctx *Context) EndWindow() {
+	C.mu_end_window(ctx.parent)
+}
+
+// ...
+
+func (ctx *Context) OpenPopup(name string) {
+	cname := C.CString(name)
+	defer C.free(unsafe.Pointer(cname))
+	C.mu_open_popup(ctx.parent, cname)
+}
+
+func (ctx *Context) BeginPopup(name string) bool {
+	cname := C.CString(name)
+	defer C.free(unsafe.Pointer(cname))
+	v := C.mu_begin_popup(ctx.parent, cname)
+	return v != 0
+}
+
+func (ctx *Context) EndPopup() {
+	C.mu_end_popup(ctx.parent)
+}

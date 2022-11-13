@@ -25,6 +25,7 @@ const (
 	KeyReturn
 )
 
+// InputMouseMove is the actual position of the mouse in pixels.
 func (ctx *Context) InputMouseMove(x, y int32) {
 	C.mu_input_mousemove(ctx.parent, C.int(x), C.int(y))
 }
