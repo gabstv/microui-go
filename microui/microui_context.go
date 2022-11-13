@@ -48,6 +48,15 @@ func (ctx *Context) Hover() ID {
 	return ID(ctx.parent.hover)
 }
 
+func (ctx *Context) HoverRoot() *Container {
+	if ctx.parent.hover_root == nil {
+		return nil
+	}
+	return &Container{
+		parent: ctx.parent.hover_root,
+	}
+}
+
 func (ctx *Context) SetFocus(id ID) {
 	C.mu_set_focus(ctx.parent, C.uint(id))
 }
