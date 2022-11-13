@@ -37,6 +37,14 @@ func (ctx *Context) End() {
 	C.mu_end(ctx.parent)
 }
 
+func (ctx *Context) SetFocus(id ID) {
+	C.mu_set_focus(ctx.parent, C.uint(id))
+}
+
+func (ctx *Context) LastID() ID {
+	return ID(ctx.parent.last_id)
+}
+
 func (ctx *Context) GetCurrentContainer() *Container {
 	return &Container{
 		parent: C.mu_get_current_container(ctx.parent),

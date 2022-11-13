@@ -126,6 +126,19 @@ func (ctx *Context) Checkbox(label string, state *int32) ResultFlags {
 	return ResultFlags(v)
 }
 
+func (ctx *Context) Textbox(buf *Buf) ResultFlags {
+	return ctx.TextboxEx(buf, 0)
+}
+
+// mu_textbox_raw would go here
+
+func (ctx *Context) TextboxEx(buf *Buf, flags OptFlags) ResultFlags {
+	cbuf := (*C.char)(unsafe.Pointer(&buf.data[0]))
+	bufsz := C.int(buf.Size())
+	v := C.mu_textbox_ex(ctx.parent, cbuf, bufsz, C.int(flags))
+	return ResultFlags(v)
+}
+
 // ...
 
 func (ctx *Context) Slider(value *float32, low, high float32) ResultFlags {
@@ -177,6 +190,20 @@ func (ctx *Context) BeginWindow(title string, rect Rect) bool {
 
 func (ctx *Context) EndWindow() {
 	C.mu_end_window(ctx.parent)
+}
+
+func (ctx *Context) BeginPanel(name string) {
+	ctx.BeginPanelEx(name, 0)
+}
+
+func (ctx *Context) BeginPanelEx(name string, flags OptFlags) {
+	cname := C.CString(name)
+	defer C.free(unsafe.Pointer(cname))
+	C.mu_begin_panel_ex(ctx.parent, cname, C.int(flags))
+}
+
+func (ctx *Context) EndPanel() {
+	C.mu_end_panel(ctx.parent)
 }
 
 // ...

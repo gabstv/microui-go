@@ -1,17 +1,35 @@
-package microui
+package demo
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+
+	//lint:ignore ST1001 this is a demo
+	. "github.com/gabstv/microui-go/microui"
+)
 
 var (
 	demoWindowCheckboxes = [3]int32{1, 0, 1}
 	demoWindowBackground = [3]float32{90, 95, 100}
+	logbuf               = new(strings.Builder)
+	logbufUpdated        bool
+
+	logSubmitBuf = NewBuf(128)
 )
 
-func DemoWindowBackgroundColor() Color {
+func writeLog(text string) {
+	if logbuf.Len() > 0 {
+		logbuf.WriteRune('\n')
+	}
+	logbuf.WriteString(text)
+	logbufUpdated = true
+}
+
+func BackgroundColor() Color {
 	return Color{R: uint8(demoWindowBackground[0]), G: uint8(demoWindowBackground[1]), B: uint8(demoWindowBackground[2]), A: 255}
 }
 
-func DrawDemoWindow(ctx *Context) {
+func DemoWindow(ctx *Context) {
 	if ctx.BeginWindow("Demo Window", NewRect(40, 40, 300, 450)) {
 		defer ctx.EndWindow()
 		win := ctx.GetCurrentContainer()
@@ -25,12 +43,9 @@ func DrawDemoWindow(ctx *Context) {
 			win := ctx.GetCurrentContainer()
 			r := win.Rect()
 			ctx.LayoutRow(2, []int32{54, -1}, 0)
-			// mu_label(ctx,"Position:");
 			ctx.Label("Position:")
 			postxt := fmt.Sprintf("%d, %d", r.X, r.Y)
-			// sprintf(buf, "%d, %d", win->rect.x, win->rect.y); mu_label(ctx, buf);
 			ctx.Label(postxt)
-			// mu_label(ctx, "Size:");
 			ctx.Label("Size:")
 			postxt = fmt.Sprintf("%d, %d", r.W, r.H)
 			ctx.Label(postxt)
@@ -41,14 +56,14 @@ func DrawDemoWindow(ctx *Context) {
 			ctx.LayoutRow(3, []int32{86, -110, -1}, 0)
 			ctx.Label("Test buttons 1:")
 			if ctx.Button("Button 1") {
-				// TODO: write_log("Pressed button 1")
+				writeLog("Pressed button 1")
 			}
 			if ctx.Button("Button 2") {
-				// TODO: write_log("Pressed button 2")
+				writeLog("Pressed button 2")
 			}
 			ctx.Label("Test buttons 2:")
 			if ctx.Button("Button 3") {
-				// TODO: write_log("Pressed button 3")
+				writeLog("Pressed button 3")
 			}
 			if ctx.Button("Popup") {
 				ctx.OpenPopup("Test Popup")
@@ -72,10 +87,10 @@ func DrawDemoWindow(ctx *Context) {
 				}
 				if ctx.BeginTreenode("Test 1b") {
 					if ctx.Button("Button 1") {
-						//TODO: write_log("Pressed button 1")
+						writeLog("Pressed button 1")
 					}
 					if ctx.Button("Button 2") {
-						//TODO: write_log("Pressed button 2")
+						writeLog("Pressed button 2")
 					}
 					ctx.EndTreenode()
 				}
@@ -84,16 +99,16 @@ func DrawDemoWindow(ctx *Context) {
 			if ctx.BeginTreenode("Test 2") {
 				ctx.LayoutRow(2, []int32{54, 54}, 0)
 				if ctx.Button("Button 3") {
-					//TODO: write_log("Pressed button 3")
+					writeLog("Pressed button 3")
 				}
 				if ctx.Button("Button 4") {
-					//TODO: write_log("Pressed button 3")
+					writeLog("Pressed button 4")
 				}
 				if ctx.Button("Button 5") {
-					//TODO: write_log("Pressed button 3")
+					writeLog("Pressed button 5")
 				}
 				if ctx.Button("Button 6") {
-					//TODO: write_log("Pressed button 3")
+					writeLog("Pressed button 6")
 				}
 				ctx.EndTreenode()
 			}
@@ -126,9 +141,43 @@ func DrawDemoWindow(ctx *Context) {
 			ctx.LayoutEndColumn()
 			// color preview
 			rect := ctx.LayoutNext()
-			ctx.DrawRect(rect, Color{uint8(demoWindowBackground[0]), uint8(demoWindowBackground[1]), uint8(demoWindowBackground[2]), 255})
+			ctx.DrawRect(rect, NewColor(uint8(demoWindowBackground[0]), uint8(demoWindowBackground[1]), uint8(demoWindowBackground[2]), 255))
 			txt := fmt.Sprintf("#%02X%02X%02X", uint8(demoWindowBackground[0]), uint8(demoWindowBackground[1]), uint8(demoWindowBackground[2]))
 			ctx.DrawControlText(txt, rect, ColorText, OptAlignCenter)
+		}
+	}
+}
+
+func LogWindow(ctx *Context) {
+	if ctx.BeginWindow("Log Window", NewRect(350, 40, 300, 200)) {
+		defer ctx.EndWindow()
+		// output text panel
+		ctx.LayoutRow(1, []int32{-1}, -25)
+		ctx.BeginPanel("Log Output")
+		panel := ctx.GetCurrentContainer()
+		ctx.LayoutRow(1, []int32{-1}, -1)
+		ctx.Text(logbuf.String())
+		ctx.EndPanel()
+		if logbufUpdated {
+			s := panel.Scroll()
+			s.Y = panel.ContentSize().Y
+			panel.SetScroll(s)
+			logbufUpdated = false
+		}
+
+		// input textbox + submit button
+		submitted := false
+		ctx.LayoutRow(2, []int32{-70, -1}, 0)
+		if ctx.Textbox(logSubmitBuf)&ResSubmit != 0 {
+			ctx.SetFocus(ctx.LastID())
+			submitted = true
+		}
+		if ctx.Button("Submit") {
+			submitted = true
+		}
+		if submitted {
+			writeLog(logSubmitBuf.String())
+			logSubmitBuf.Clear()
 		}
 	}
 }

@@ -7,6 +7,7 @@ package microui
 */
 import "C"
 import (
+	"strings"
 	"unsafe"
 
 	"golang.org/x/exp/constraints"
@@ -57,9 +58,17 @@ func (r *Color) cval() C.mu_Color {
 	return C.mu_Color{C.uchar(r.R), C.uchar(r.G), C.uchar(r.B), C.uchar(r.A)}
 }
 
+func NewColor(r, g, b, a uint8) Color {
+	return Color{R: r, G: g, B: b, A: a}
+}
+
 type Vec2 struct {
 	X int32
 	Y int32
+}
+
+func (r *Vec2) cval() C.mu_Vec2 {
+	return C.mu_Vec2{C.int(r.X), C.int(r.Y)}
 }
 
 type Container struct {
@@ -94,6 +103,10 @@ func (c *Container) Scroll() Vec2 {
 	return v
 }
 
+func (c *Container) SetScroll(v Vec2) {
+	c.parent.scroll = v.cval()
+}
+
 func (c *Container) ZIndex() int32 {
 	v := *(*int32)(unsafe.Pointer(&c.parent.zindex))
 	return v
@@ -119,3 +132,48 @@ func cbool(v bool) C.int {
 	}
 	return 0
 }
+
+type Buf struct {
+	data []byte
+}
+
+func NewBuf(size int) *Buf {
+	return &Buf{
+		data: make([]byte, size+1),
+	}
+}
+
+func (sb *Buf) Size() int {
+	return len(sb.data)
+}
+
+func (sb *Buf) String() string {
+	nb := strings.IndexByte(string(sb.data), 0)
+	if nb == -1 || nb == 0 {
+		return ""
+	}
+	return string(sb.data[:nb])
+}
+
+// Clear sets the first byte of the buffer to 0.
+func (sb *Buf) Clear() {
+	sb.data[0] = 0
+}
+
+func (sb *Buf) SetString(s string) error {
+	slen := len(s)
+	if slen > len(sb.data)-1 {
+		return ErrBufferTooSmall
+	}
+	// erase the buffer
+	for i := range sb.data {
+		sb.data[i] = 0
+	}
+	// copy the string
+	copy(sb.data, []byte(s))
+	// ensure null termination
+	// sb.data[slen] = 0
+	return nil
+}
+
+type ID uint32
