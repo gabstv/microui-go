@@ -180,9 +180,13 @@ func (ctx *Context) EndTreenode() {
 }
 
 func (ctx *Context) BeginWindow(title string, rect Rect) bool {
+	return ctx.BeginWindowEx(title, rect, 0)
+}
+
+func (ctx *Context) BeginWindowEx(title string, rect Rect, flags OptFlags) bool {
 	cTitle := C.CString(title)
 	defer C.free(unsafe.Pointer(cTitle))
-	iv := C.mu_begin_window_ex(ctx.parent, cTitle, rect.cval(), C.int(0))
+	iv := C.mu_begin_window_ex(ctx.parent, cTitle, rect.cval(), C.int(flags))
 	return iv != 0
 }
 
