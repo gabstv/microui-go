@@ -45,7 +45,7 @@ func (ctx *Context) Focus() ID {
 
 // Hover returns the id of the currently hovered item.
 func (ctx *Context) Hover() ID {
-
+	return ID(ctx.parent.hover)
 }
 
 func (ctx *Context) SetFocus(id ID) {
