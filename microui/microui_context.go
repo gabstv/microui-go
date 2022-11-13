@@ -38,6 +38,16 @@ func (ctx *Context) End() {
 	C.mu_end(ctx.parent)
 }
 
+// Focus returns the id of the currently focused item.
+func (ctx *Context) Focus() ID {
+	return ID(ctx.parent.focus)
+}
+
+// Hover returns the id of the currently hovered item.
+func (ctx *Context) Hover() ID {
+
+}
+
 func (ctx *Context) SetFocus(id ID) {
 	C.mu_set_focus(ctx.parent, C.uint(id))
 }
