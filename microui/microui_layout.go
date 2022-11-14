@@ -112,6 +112,10 @@ func (ctx *Context) Button(label string) bool {
 }
 
 func (ctx *Context) ButtonEx(label string, icon int32, flags OptFlags) bool {
+	if label == "" {
+		n := C.mu_button_ex(ctx.parent, nil, C.int(icon), C.int(flags))
+		return n != 0
+	}
 	clabel := C.CString(label)
 	defer C.free(unsafe.Pointer(clabel))
 	v := C.mu_button_ex(ctx.parent, clabel, C.int(icon), C.int(flags))
