@@ -6,7 +6,11 @@ package microui
 #include <stdlib.h>
 */
 import "C"
-import "unsafe"
+import (
+	"unsafe"
+
+	"golang.org/x/exp/constraints"
+)
 
 type Context struct {
 	parent     *C.mu_Context
@@ -68,9 +72,17 @@ func GetID[T any](ctx *Context, data *T) ID {
 	return ID(C.mu_get_id(ctx.parent, unsafe.Pointer(data), C.int(size)))
 }
 
-func PushID[T any](ctx *Context, data *T) {
+type AddressableByC interface {
+	constraints.Integer | constraints.Float
+}
+
+func PushID[T AddressableByC](ctx *Context, data *T) {
 	size := unsafe.Sizeof(*data)
 	C.mu_push_id(ctx.parent, unsafe.Pointer(data), C.int(size))
+}
+
+func (ctx *Context) PushIDInt32(id *int32) {
+	C.mu_push_id(ctx.parent, unsafe.Pointer(id), C.int(4))
 }
 
 func (ctx *Context) PopID() {
