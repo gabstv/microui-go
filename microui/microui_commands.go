@@ -28,47 +28,6 @@ func (c *Command) Size() int32 {
 	return c.size
 }
 
-// type BaseCommand struct {
-// 	Type CommandType
-// 	Size int32
-// }
-
-// type JumpCommand struct {
-// 	Base BaseCommand
-// 	Dst unsafe.Pointer
-// }
-
-// type ClipCommand struct {
-// 	Base BaseCommand
-// 	Rect Rect
-// }
-
-// type RectCommand struct {
-// 	Base BaseCommand
-// 	Rect Rect
-// 	Color Color
-// }
-
-// type TextCommand struct {
-// 	Base BaseCommand
-// 	Font Font
-// 	Pos Vec2
-// 	Color Color
-// 	Text string
-// }
-
-// type BaseCommand struct {
-// 	*Command
-// }
-
-// func (c *BaseCommand) Type() CommandType {
-// 	return c.ctype
-// }
-
-// func (c *BaseCommand) Size() int32 {
-// 	return c.size
-// }
-
 type JumpCommand struct {
 	*Command
 }

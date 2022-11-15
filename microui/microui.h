@@ -171,6 +171,14 @@ typedef struct {
   mu_Color colors[MU_COLOR_MAX];
 } mu_Style;
 
+/* GABS: used for MICROUI_EXTENSIONS_H */
+#define MUX_MAX_STYLE_STACK 32
+typedef struct {
+    mu_Style stack[MUX_MAX_STYLE_STACK];
+    mu_Style *original;
+    int top;
+} mux_StyleStack;
+
 struct mu_Context {
   /* callbacks */
   int (*text_width)(mu_Font font, const char *str, int len);
@@ -179,6 +187,7 @@ struct mu_Context {
   /* core state */
   mu_Style _style;
   mu_Style *style;
+  mux_StyleStack *style_stack;
   mu_Id hover;
   mu_Id focus;
   mu_Id last_id;
