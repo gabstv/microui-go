@@ -132,9 +132,9 @@ func Max[T constraints.Ordered](a, b T) T {
 	return b
 }
 
-type Font unsafe.Pointer
+type Font uintptr
 
-func cvalOfFont(f Font) C.mu_Font {
+func (f Font) handle() C.mu_Font {
 	return C.mu_Font(f)
 }
 

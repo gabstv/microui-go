@@ -24,7 +24,7 @@ func (c *Context) PushStyleColor(id ColorID, color Color) {
 }
 
 func (c *Context) PushStyleFont(font Font) {
-	C.mux_push_style_font(c.parent, cvalOfFont(font))
+	C.mux_push_style_font(c.parent, font.handle())
 }
 
 func (c *Context) PushStyleSize(size Vec2) {
