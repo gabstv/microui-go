@@ -20,6 +20,9 @@ type Context struct {
 	beginRender   func()
 	renderCommand func(cmd *Command)
 	endRender     func()
+
+	beginCallback func()
+	endCallback   func()
 }
 
 func NewContext() *Context {
@@ -34,12 +37,26 @@ func NewContext() *Context {
 	}
 }
 
+func (ctx *Context) SetBeginCallback(fn func()) {
+	ctx.beginCallback = fn
+}
+
+func (ctx *Context) SetEndCallback(fn func()) {
+	ctx.endCallback = fn
+}
+
 func (ctx *Context) Begin() {
 	C.mu_begin(ctx.parent)
+	if ctx.beginCallback != nil {
+		ctx.beginCallback()
+	}
 }
 
 func (ctx *Context) End() {
 	C.mu_end(ctx.parent)
+	if ctx.endCallback != nil {
+		ctx.endCallback()
+	}
 }
 
 // Focus returns the id of the currently focused item.
