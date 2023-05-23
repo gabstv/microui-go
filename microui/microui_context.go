@@ -116,6 +116,18 @@ func (ctx *Context) GetCurrentContainer() *Container {
 	}
 }
 
+func (ctx *Context) GetContainer(name string) *Container {
+	cname := C.CString(name)
+	defer C.free(unsafe.Pointer(cname))
+	container := C.mu_get_container(ctx.parent, cname)
+	if container == nil {
+		return nil
+	}
+	return &Container{
+		parent: container,
+	}
+}
+
 func (ctx *Context) Style() *Style {
 	return &Style{
 		parent: ctx.parent.style,
