@@ -125,6 +125,14 @@ func (c *Container) Open() bool {
 	return v == 1
 }
 
+func (c *Container) SetOpen(v bool) {
+	if v {
+		c.parent.open = 1
+	} else {
+		c.parent.open = 0
+	}
+}
+
 func Max[T constraints.Ordered](a, b T) T {
 	if a > b {
 		return a
