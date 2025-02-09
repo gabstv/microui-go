@@ -16,6 +16,9 @@ A Go binding of [microui](https://github.com/rxi/microui), a *tiny*, portable, i
 This example is using a [raylib-go driver](https://github.com/gabstv/microui-go-raylib). The source code is available at:  
 https://github.com/gabstv/microui-go-raylib/blob/main/example/demo/main.go
 
+### Ebitengine
+There is also a [microui-go-ebitengine](https://github.com/gabstv/microui-go-ebitengine) driver, which uses the Ebitengine library to render.
+
 ## Usage
 A Go version of the usage docs is not ready yet. In the meantime, you can check the
 [original usage docs](https://github.com/rxi/microui/blob/master/doc/usage.md) at the
